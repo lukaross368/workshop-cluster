@@ -4,7 +4,7 @@ on: [push]
 
 env:
   RESOURCE_GROUP_NAME: terraform-state
-  STORAGE_ACCOUNT_NAME: terraform-state-storage
+  STORAGE_ACCOUNT_NAME: tfstate
   CONTAINER_NAME: tfstate
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Azure CLI script
+    - name: Run Terraform Setup Script
       uses: azure/cli@v2
       with:
         azcliversion: latest

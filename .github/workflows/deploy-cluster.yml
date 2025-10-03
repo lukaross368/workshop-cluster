@@ -40,10 +40,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: "1.6.6"
@@ -55,6 +51,11 @@ jobs:
   
     - name: Terraform Init
       id: init
+      env:
+        ARM_CLIENT_ID: '4131c778-4071-4b94-a8e5-68d03a700848'
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: '0094462a-a615-4c45-86cb-d36510ad6456'
+        ARM_TENANT_ID: 'c541516e-f75d-4868-b472-ea924b5ddee3'
       run: terraform init -backend-config=backend_config/dev.conf
     
     - name: Terraform Validate

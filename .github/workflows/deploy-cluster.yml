@@ -4,12 +4,12 @@ on: [push]
 
 env:
   RESOURCE_GROUP_NAME: terraform-state
-  STORAGE_ACCOUNT_NAME: tfstate
+  STORAGE_ACCOUNT_NAME: tfstate13527
   CONTAINER_NAME: tfstate
 
 jobs:
 
-  build-and-deploy:
+  setup:
     runs-on: ubuntu-latest
     steps:
 
@@ -23,7 +23,6 @@ jobs:
         azcliversion: latest
         inlineScript: |
 
-          STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME$RANDOM
           # Create resource group
           az group create --name $RESOURCE_GROUP_NAME --location uksouth
 
@@ -32,3 +31,27 @@ jobs:
 
           # Create blob container
           az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
+
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+  
+    - name: Terraform Init
+      id: init
+      run: terraform init -backend-config=backend_config/dev.conf
+    
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate -no-color
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -input=false
+      

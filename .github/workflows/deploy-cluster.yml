@@ -8,7 +8,6 @@ env:
   CONTAINER_NAME: tfstate
 
 jobs:
-
   setup:
     runs-on: ubuntu-latest
     steps:
@@ -33,10 +32,16 @@ jobs:
           az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
 
   plan:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.6.6"
+
+    - run: |
+        cd terraform/
 
     - name: Terraform fmt
       id: fmt
@@ -45,7 +50,7 @@ jobs:
   
     - name: Terraform Init
       id: init
-      run: terraform init -backend-config=terraform/backend_config/dev.conf
+      run: terraform init -backend-config=backend_config/dev.conf
     
     - name: Terraform Validate
       id: validate

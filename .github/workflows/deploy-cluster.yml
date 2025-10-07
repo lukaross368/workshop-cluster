@@ -31,7 +31,7 @@ jobs:
           # Create blob container
           az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
 
-  plan:
+  deploy_infra:
     needs: setup
     runs-on: ubuntu-latest
     env:

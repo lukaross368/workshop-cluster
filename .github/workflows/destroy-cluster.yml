@@ -1,0 +1,50 @@
+name: Destory Cluster Infra
+run-name: ${{github.actor}}
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 18 * * *"
+
+env:
+  RESOURCE_GROUP_NAME: terraform-state
+  STORAGE_ACCOUNT_NAME: tfstate13527
+  CONTAINER_NAME: tfstate
+
+jobs:
+    deploy_infra:
+      runs-on: ubuntu-latest
+      env:
+        ARM_CLIENT_ID: '4131c778-4071-4b94-a8e5-68d03a700848'
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: '0094462a-a615-4c45-86cb-d36510ad6456'
+        ARM_TENANT_ID: 'c541516e-f75d-4868-b472-ea924b5ddee3'
+      defaults:
+        run:
+          working-directory: terraform/
+      steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.6.6"
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+    
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config=backend_config/dev.conf
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false
+
+      - name: Terraform Destroy
+        id: destroy
+        run: terraform destroy -auto-approve

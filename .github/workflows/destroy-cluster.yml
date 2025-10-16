@@ -1,4 +1,4 @@
-name: Destory Cluster Infra
+name: Destroy Cluster
 run-name: ${{github.actor}}
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ env:
   CONTAINER_NAME: tfstate
 
 jobs:
-    deploy_infra:
+    destroy_infra:
       runs-on: ubuntu-latest
       env:
         ARM_CLIENT_ID: '4131c778-4071-4b94-a8e5-68d03a700848'
@@ -43,7 +43,7 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false
+        run: terraform plan -destroy -no-color -input=false
 
       - name: Terraform Destroy
         id: destroy
